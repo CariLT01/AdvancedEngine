@@ -6,7 +6,7 @@
 
 class Camera {
 public:
-	Camera(const glm::vec3& position, const glm::vec3& direction, const float fov);
+	Camera(const glm::vec3& position, const float fov);
 	~Camera();
 
 	glm::vec3 position;
@@ -19,6 +19,10 @@ public:
 
 	float fov;
 	float aspectRatio;
+
+	float pitch;
+	float yaw;
+	float roll;
 
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;

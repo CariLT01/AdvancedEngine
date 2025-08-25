@@ -30,12 +30,17 @@ private:
 
 	Window* window;
 
-	const unsigned int currentWidth;
-	const unsigned int currentHeight;
+	unsigned int currentWidth;
+	unsigned int currentHeight;
+
+	float deltaTime;
 
 	// DEBUG
 
 	WorldObject* worldObject;
 	Material* material;
 	Camera* camera;
+
+	double lastX;
+	double lastY;
 };

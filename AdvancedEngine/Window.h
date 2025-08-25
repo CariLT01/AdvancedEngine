@@ -34,12 +34,14 @@ public:
 
 	void setWindowTitle(const char* title);
 
+	GLFWwindow* window;
+
 private:
 
 	void initializeWindow(const WindowConfig& config);
 	void terminate();
 
 
-	GLFWwindow* window;
+	
 
 };

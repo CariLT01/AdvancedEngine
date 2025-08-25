@@ -1,9 +1,15 @@
 #include "Engine.h"
 #include "MoreMaterials.h"
+#include "MarchingCubesGenerator.h"
+#include "Settings.h"
+#include <FastNoise/FastNoise.h>
 #include <chrono>
+#include <cstdlib>
+#include <ctime>
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
+const float MOVEMENT_SPEED = 5.0f;
 const char* vertexShaderSource = R"(
 #version 460 core
 
@@ -48,23 +54,43 @@ Engine::~Engine() {
 
 void Engine::handleCameraInput() {
 
+	const float SENSITIVITY = 0.1f;
 
 	if (window->getKeyPressed(GLFW_KEY_W) == GLFW_PRESS) {
-		camera->position += camera->direction * 0.1f;
+		camera->position += camera->direction * deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
 	}
 	if (window->getKeyPressed(GLFW_KEY_A) == GLFW_PRESS) {
-		camera->position += camera->cameraRight * -0.1f;
+		camera->position += -camera->cameraRight * deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
 	}
 	if (window->getKeyPressed(GLFW_KEY_S) == GLFW_PRESS) {
-		camera->position += camera->direction * -0.1f;
+		camera->position += camera->direction * -deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
 	}
 	if (window->getKeyPressed(GLFW_KEY_D) == GLFW_PRESS) {
-		camera->position += camera->cameraRight * 0.1f;
+		camera->position += camera->cameraRight * deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
 	}
+
+	double posX, posY;
+
+	glfwGetCursorPos(window->window, &posX, &posY);
+
+	double deltaX = posX - lastX;
+	double deltaY = posY - lastY;
+
+	lastX = posX;
+	lastY = posY;
+
+	camera->yaw += deltaX * SENSITIVITY;
+	camera->pitch += -deltaY * SENSITIVITY;
+
+	camera->yaw = fmod(camera->yaw, 360.0f);
+	camera->pitch = glm::clamp(camera->pitch, -89.0f, 89.0f);
+	camera->recomputeMatrices();
+
+
 	
 }
 
@@ -80,6 +106,9 @@ void Engine::initialize() {
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set a clear color
 	glViewport(0, 0, currentWidth, currentHeight);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glfwSetInputMode(window->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	initializeCamera();
 	initializeDebuggingObjects();
 	
@@ -88,7 +117,7 @@ void Engine::initialize() {
 
 void Engine::initializeCamera() {
 
-	camera = new Camera(glm::vec3(0, 0, 5), glm::vec3(0, 0, -1), 90.f);
+	camera = new Camera(glm::vec3(0, 0, 5), 90.f);
 	camera->aspectRatio = static_cast<float>(window->windowWidth) / static_cast<float>(window->windowHeight);
 
 	camera->recomputeMatrices();
@@ -108,7 +137,7 @@ void Engine::initializeDebuggingObjects() {
 		.normalized = GL_FALSE
 	};*/
 
-	std::vector<float> vertices = {
+	/*std::vector<float> vertices = {
 		 0.5f,  0.5f, 0.0f,  // top right
 		 0.5f, -0.5f, 0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,  // bottom left
@@ -119,14 +148,59 @@ void Engine::initializeDebuggingObjects() {
 		0, 1, 3,
 		// first triangle
 	  1, 2, 3    // second triangle
-	};
+	};*/
 
-	material = new TransformMaterial(fragmentShaderSource);
-	Mesh* mesh = new Mesh(vertices, indices, material);
+	//material = new TransformMaterial(fragmentShaderSource);
+	//Mesh* mesh = new Mesh(vertices, indices, material);
 
 	
-	worldObject = new WorldObject(glm::vec3(0, 0, -1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mesh, camera);
+	//worldObject = new WorldObject(glm::vec3(0, 0, -1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mesh, camera);
 
+	// --- Generate a grid of random values ---
+
+	std::vector<float> densities(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+	//densities.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+	std::vector<unsigned int> materials = {};
+
+	auto fnSimplex = FastNoise::New<FastNoise::Simplex>();
+	
+	const float scale = 0.03f;
+
+	srand(time(nullptr));
+
+
+	fnSimplex->GenUniformGrid3D(densities.data(), 0, 0, 0, CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE, 0.06, rand());
+
+	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
+		for (unsigned int y = 0; y < CHUNK_SIZE; y++) {
+			for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
+
+
+				//const float v = fnSimplex->GenSingle3D((float)x * scale, (float)y * scale, (float)z * scale, 68);
+				//const float v = rand() / (float)RAND_MAX * 2.0f - 1.0f;
+				//densities.push_back((v + 1) / 2.0f);
+				const float v = densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE];
+				densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = (v + 1) / 2.0f;
+				materials.push_back(1);
+
+			}
+		}
+	}
+
+	MarchingCubeGenerator generator(0.5f);
+
+	const std::vector<float> vertices = generator.generateMesh(densities, materials, 4);
+
+	std::vector<unsigned int> indices = {};
+
+	for (unsigned int i = 0; i < vertices.size() / 6; i++) {
+		indices.push_back(i);
+	}
+
+	material = new TerrainMaterial();
+
+	Mesh* mesh = new Mesh(vertices, indices, material);
+	worldObject = new WorldObject(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mesh, camera);
 }
 
 void Engine::tick() {
@@ -149,6 +223,9 @@ void Engine::run() {
 
 
 	while (!window->windowShouldClose()) {
+
+		auto deltaTimeStart = std::chrono::high_resolution_clock::now();
+
 		tick();
 		render();
 		window->swapBuffers();
@@ -163,6 +240,10 @@ void Engine::run() {
 			start = std::chrono::high_resolution_clock::now();
 			fpsCounter = 0;
 		}
+
+		auto deltaTimeEnd = std::chrono::high_resolution_clock::now();
+
+		deltaTime = std::chrono::duration<float, std::milli>(deltaTimeEnd - deltaTimeStart).count() / 1000.0f;
 	}
 }
 

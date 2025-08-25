@@ -28,6 +28,12 @@
     <Filter Include="Header Files\engine\player">
       <UniqueIdentifier>{288f66d5-05ff-4b9a-a60d-dab2eb0d7b6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\terrain">
+      <UniqueIdentifier>{39445e7b-c632-45ec-9190-fc6cbd105c17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\world">
+      <UniqueIdentifier>{3f2054dc-86e9-4737-b6b4-d67088412db1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -72,6 +78,12 @@
     <ClCompile Include="WorldObject.cpp">
       <Filter>Source Files\engine\mesh</Filter>
     </ClCompile>
+    <ClCompile Include="MarchingCubesGenerator.cpp">
+      <Filter>Source Files\engine\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunksManager.h">
+      <Filter>Header Files\engine\world</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -106,6 +118,18 @@
     </ClInclude>
     <ClInclude Include="MoreMaterials.h">
       <Filter>Header Files\engine\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarchingCubesGenerator.h">
+      <Filter>Header Files\engine\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationTables.h">
+      <Filter>Header Files\engine\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

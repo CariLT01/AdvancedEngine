@@ -1,0 +1,7 @@
+
+class ChunksManager {
+public:
+	ChunksManager();
+
+
+};
