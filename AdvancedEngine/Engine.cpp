@@ -1,4 +1,6 @@
 #include "Engine.h"
+#include "MoreMaterials.h"
+#include <chrono>
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
@@ -44,23 +46,67 @@ Engine::~Engine() {
 	delete window;
 }
 
+void Engine::handleCameraInput() {
+
+
+	if (window->getKeyPressed(GLFW_KEY_W) == GLFW_PRESS) {
+		camera->position += camera->direction * 0.1f;
+		camera->recomputeMatrices();
+	}
+	if (window->getKeyPressed(GLFW_KEY_A) == GLFW_PRESS) {
+		camera->position += camera->cameraRight * -0.1f;
+		camera->recomputeMatrices();
+	}
+	if (window->getKeyPressed(GLFW_KEY_S) == GLFW_PRESS) {
+		camera->position += camera->direction * -0.1f;
+		camera->recomputeMatrices();
+	}
+	if (window->getKeyPressed(GLFW_KEY_D) == GLFW_PRESS) {
+		camera->position += camera->cameraRight * 0.1f;
+		camera->recomputeMatrices();
+	}
+	
+}
+
+void Engine::onWindowResize() {
+	glViewport(0, 0, window->windowWidth, window->windowHeight);
+
+	camera->aspectRatio = static_cast<float>(window->windowWidth) / static_cast<float>(window->windowHeight);
+	camera->recomputeMatrices();
+}
+
 void Engine::initialize() {
 	// Initialization code can go here if needed
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set a clear color
 	glViewport(0, 0, currentWidth, currentHeight);
-
+	initializeCamera();
 	initializeDebuggingObjects();
+	
+	registerEvents();
+}
+
+void Engine::initializeCamera() {
+
+	camera = new Camera(glm::vec3(0, 0, 5), glm::vec3(0, 0, -1), 90.f);
+	camera->aspectRatio = static_cast<float>(window->windowWidth) / static_cast<float>(window->windowHeight);
+
+	camera->recomputeMatrices();
+
+}
+
+void Engine::registerEvents() {
+	window->onResize = std::bind(&Engine::onWindowResize, this);
 }
 
 void Engine::initializeDebuggingObjects() {
 
-	VertexAttribute positionVA = VertexAttribute{
+	/*VertexAttribute positionVA = VertexAttribute{
 		.sizeInBytes = sizeof(float) * 3,
 		.size = 3,
 		.type = GL_FLOAT,
 		.normalized = GL_FALSE
-	};
+	};*/
 
 	std::vector<float> vertices = {
 		 0.5f,  0.5f, 0.0f,  // top right
@@ -75,15 +121,16 @@ void Engine::initializeDebuggingObjects() {
 	  1, 2, 3    // second triangle
 	};
 
+	material = new TransformMaterial(fragmentShaderSource);
+	Mesh* mesh = new Mesh(vertices, indices, material);
 
-
-	material = new Material(vertexShaderSource, fragmentShaderSource, { positionVA });
-	mesh = new Mesh(vertices, indices, material);
+	
+	worldObject = new WorldObject(glm::vec3(0, 0, -1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mesh, camera);
 
 }
 
 void Engine::tick() {
-
+	handleCameraInput();
 }
 
 void Engine::render() {
@@ -92,15 +139,30 @@ void Engine::render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	mesh->render();
+	worldObject->render();
 }
 
 void Engine::run() {
+
+	int fpsCounter = 0;
+	auto start = std::chrono::high_resolution_clock::now();
+
+
 	while (!window->windowShouldClose()) {
 		tick();
 		render();
 		window->swapBuffers();
 		window->pollEvents();
+
+		fpsCounter++;
+
+		auto now = std::chrono::high_resolution_clock::now();
+		float elapsed = std::chrono::duration<float, std::milli>(now - start).count();
+		if (elapsed >= 1000.0f) {
+			window->setWindowTitle((std::string("Not advanced engine - FPS: ") + std::to_string(fpsCounter)).c_str());
+			start = std::chrono::high_resolution_clock::now();
+			fpsCounter = 0;
+		}
 	}
 }
 

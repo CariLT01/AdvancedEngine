@@ -1,4 +1,5 @@
 #include "Material.h"
+#include <stdexcept>
 
 Material::Material(const char* vertexShaderSource, const char* fragmentShaderSource, std::vector<VertexAttribute> vertexAttributes) {
 	if (vertexAttributes.empty()) {
@@ -21,3 +22,7 @@ Material::Material(const char* vertexShaderSource, const char* fragmentShaderSou
 void Material::use() {
 	shaderProgram->use();
 }
+
+int Material::getUniformLocation(const char* name) {
+	return shaderProgram->getUniformLocation(name);
+}	

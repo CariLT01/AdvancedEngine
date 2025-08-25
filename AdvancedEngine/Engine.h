@@ -2,7 +2,8 @@
 
 #include "Window.h"
 #include "Mesh.h"
-#include "Material.h"
+#include "Camera.h"
+#include "WorldObject.h"
 
 
 
@@ -13,6 +14,8 @@ public:
 
 	void run();
 
+	void onWindowResize();
+
 private:
 
 	void tick();
@@ -20,6 +23,10 @@ private:
 
 	void initialize();
 	void initializeDebuggingObjects();
+	void initializeCamera();
+
+	void handleCameraInput();
+	void registerEvents();
 
 	Window* window;
 
@@ -28,6 +35,7 @@ private:
 
 	// DEBUG
 
-	Mesh* mesh;
+	WorldObject* worldObject;
 	Material* material;
+	Camera* camera;
 };

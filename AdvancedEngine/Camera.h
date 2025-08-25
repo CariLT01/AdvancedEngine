@@ -1,0 +1,27 @@
+#pragma once
+
+#include <glm/glm.hpp>
+
+
+
+class Camera {
+public:
+	Camera(const glm::vec3& position, const glm::vec3& direction, const float fov);
+	~Camera();
+
+	glm::vec3 position;
+	glm::vec3 direction;
+
+
+	glm::vec3 cameraUp;
+	glm::vec3 cameraFront;
+	glm::vec3 cameraRight;
+
+	float fov;
+	float aspectRatio;
+
+	glm::mat4 viewMatrix;
+	glm::mat4 projectionMatrix;
+
+	void recomputeMatrices();
+};

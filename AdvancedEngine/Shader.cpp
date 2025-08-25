@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include <iostream>
+#include <stdexcept>
 
 Shader::Shader(const char* source, GLenum type) {
 	shader = glCreateShader(type);

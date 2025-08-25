@@ -1,9 +1,9 @@
 #pragma once
 
 #include <glad/gl.h>
-#include <vector>
 #include "VBO.h"
-#include <stdexcept>
+#include <vector>
+
 
 struct VertexAttribute {
 	unsigned int sizeInBytes;

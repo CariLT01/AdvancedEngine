@@ -8,8 +8,13 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, Mater
 	ebo = new EBO(indices, GL_STATIC_DRAW);
 }
 
-void Mesh::render() {
+void Mesh::prepareUniforms() {
 	material->use();
+}
+
+
+void Mesh::render() {
+	
 	vao->bind();
 	ebo->bind();
 	glDrawElements(GL_TRIANGLES, ebo->numberOfElements, GL_UNSIGNED_INT, 0);

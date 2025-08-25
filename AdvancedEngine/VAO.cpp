@@ -1,5 +1,6 @@
 #include "VAO.h"
 #include <iostream>
+#include <stdexcept>
 
 VAO::VAO(std::vector<VertexAttribute> vertexAttributes, VBO* vbo) {
 	if (vertexAttributes.empty()) {

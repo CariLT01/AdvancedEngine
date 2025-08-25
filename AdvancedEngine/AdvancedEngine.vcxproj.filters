@@ -25,6 +25,9 @@
     <Filter Include="Header Files\engine\mesh">
       <UniqueIdentifier>{ce113b10-b342-4918-9907-b82f5918e731}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\player">
+      <UniqueIdentifier>{288f66d5-05ff-4b9a-a60d-dab2eb0d7b6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -60,6 +63,15 @@
     <ClCompile Include="EBO.cpp">
       <Filter>Source Files\engine\mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.h">
+      <Filter>Header Files\engine\player</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\engine\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldObject.cpp">
+      <Filter>Source Files\engine\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -87,6 +99,12 @@
       <Filter>Header Files\engine\mesh</Filter>
     </ClInclude>
     <ClInclude Include="EBO.h">
+      <Filter>Header Files\engine\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldObject.h">
+      <Filter>Header Files\engine\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreMaterials.h">
       <Filter>Header Files\engine\mesh</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,7 @@ public:
 	void attachShader(Shader& shader);
 	void link();
 	void use();
+	int getUniformLocation(const char* name);
 
 	GLint shaderProgram;
 };

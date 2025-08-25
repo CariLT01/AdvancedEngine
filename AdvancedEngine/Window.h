@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
+#include <functional>
 
 struct WindowConfig {
 	unsigned int width;
@@ -24,6 +25,14 @@ public:
 	unsigned int windowHeight;
 
 	bool windowShouldClose();
+
+	// Events and callbacks
+
+	std::function<void()> onResize;
+
+	int getKeyPressed(int key);
+
+	void setWindowTitle(const char* title);
 
 private:
 

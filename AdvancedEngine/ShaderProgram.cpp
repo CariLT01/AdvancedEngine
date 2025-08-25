@@ -1,4 +1,5 @@
 #include "ShaderProgram.h"
+#include <stdexcept>
 
 ShaderProgram::ShaderProgram() {
 	shaderProgram = glCreateProgram();
@@ -26,4 +27,10 @@ void ShaderProgram::link() {
 
 void ShaderProgram::use() {
 	glUseProgram(shaderProgram);
+}
+
+
+
+int ShaderProgram::getUniformLocation(const char* name) {
+	return glGetUniformLocation(shaderProgram, name);
 }

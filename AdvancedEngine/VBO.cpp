@@ -1,5 +1,4 @@
 #include "VBO.h"
-#include <glad/gl.h>
 
 
 VBO::VBO(std::vector<float> vertices, GLenum usage) {
