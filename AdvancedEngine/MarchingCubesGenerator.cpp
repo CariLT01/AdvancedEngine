@@ -43,9 +43,12 @@ std::vector<float> MarchingCubeGenerator::generateMesh(std::vector<float> densit
 	
 	size_t notEmptyCount = 0;
 
-	for (unsigned int x = 0; x < (CHUNK_SIZE / detailLevel)-1; x++) {
-		for (unsigned int y = 0; y < (CHUNK_SIZE / detailLevel)-1; y++) {
-			for (unsigned int z = 0; z < (CHUNK_SIZE / detailLevel)-1; z++) {
+	std::cout << "Densities has a length of: " << densities.size() << std::endl;
+
+
+	for (unsigned int y = 0; y < ((CHUNK_SIZE) / detailLevel); y++) {
+		for (unsigned int x = 0; x < ((CHUNK_SIZE) / detailLevel); x++) {
+			for (unsigned int z = 0; z < ((CHUNK_SIZE) / detailLevel); z++) {
 
 				
 
@@ -59,62 +62,26 @@ std::vector<float> MarchingCubeGenerator::generateMesh(std::vector<float> densit
 			}
 		}
 	}
-	std::cout << "Marching Cubes generated " << notEmptyCount / 6 << " triangles." << std::endl;
+	//std::cout << "Marching Cubes generated " << notEmptyCount / 6 << " triangles." << std::endl;
 
 	return vertices;
 }
 
 float MarchingCubeGenerator::getDensityAtPoint(std::vector<float>& densities, const unsigned int& x, const unsigned int& y, const unsigned int& z) {
-	return densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE];
+#ifdef _DEBUG
+	const unsigned int index = z + x * (CHUNK_SIZE + 1) + y * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1);
+	if (index >= densities.size()) {
+		std::cerr << "Index out of bounds in getDensityAtPoint: " << index << " (max: " << densities.size() << ")" << std::endl;
+		std::cerr << "X:" << x << "Y: " << y << "Z: " << z << std::endl;
+		return 0.0f;
+	}
+	return densities[index];
+#endif
+
+#ifndef _DEBUG
+	return densities[z + x * (CHUNK_SIZE + 1) + y * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)];
+#endif
 }
-
-float sampleDensityAt(const std::vector<float>& densities, float x, float y, float z) {
-	const int maxIdx = CHUNK_SIZE - 1; // node indices: 0..CHUNK_SIZE-1
-	// clamp coordinates to [0, maxIdx]
-	if (x < 0.0f) x = 0.0f;
-	if (y < 0.0f) y = 0.0f;
-	if (z < 0.0f) z = 0.0f;
-	if (x > (float)maxIdx) x = (float)maxIdx;
-	if (y > (float)maxIdx) y = (float)maxIdx;
-	if (z > (float)maxIdx) z = (float)maxIdx;
-
-	int x0 = (int)floorf(x);
-	int x1 = (x0 < maxIdx) ? x0 + 1 : x0;
-	int y0 = (int)floorf(y);
-	int y1 = (y0 < maxIdx) ? y0 + 1 : y0;
-	int z0 = (int)floorf(z);
-	int z1 = (z0 < maxIdx) ? z0 + 1 : z0;
-
-	float xd = (x1 == x0) ? 0.0f : (x - x0);
-	float yd = (y1 == y0) ? 0.0f : (y - y0);
-	float zd = (z1 == z0) ? 0.0f : (z - z0);
-
-	auto get = [&](int xi, int yi, int zi)->float {
-		size_t idx = (size_t)xi + (size_t)yi * CHUNK_SIZE + (size_t)zi * CHUNK_SIZE * CHUNK_SIZE;
-		return densities[idx];
-		};
-
-	float c000 = get(x0, y0, z0);
-	float c100 = get(x1, y0, z0);
-	float c010 = get(x0, y1, z0);
-	float c110 = get(x1, y1, z0);
-	float c001 = get(x0, y0, z1);
-	float c101 = get(x1, y0, z1);
-	float c011 = get(x0, y1, z1);
-	float c111 = get(x1, y1, z1);
-
-	float c00 = c000 * (1 - xd) + c100 * xd;
-	float c10 = c010 * (1 - xd) + c110 * xd;
-	float c01 = c001 * (1 - xd) + c101 * xd;
-	float c11 = c011 * (1 - xd) + c111 * xd;
-
-	float c0 = c00 * (1 - yd) + c10 * yd;
-	float c1 = c01 * (1 - yd) + c11 * yd;
-
-	float c = c0 * (1 - zd) + c1 * zd;
-	return c;
-}
-
 
 Vector3 VertexInterp(float isolevel, const Vector3& p1, const Vector3& p2, float valp1, float valp2) {
 	float mu;
@@ -254,9 +221,11 @@ std::vector<float> MarchingCubeGenerator::buildCell(const unsigned int& localX, 
 		Vector3 v2 = vertList[triTable[cubeIndex][i + 1]];
 		Vector3 v3 = vertList[triTable[cubeIndex][i + 2]];
 		
-		addVertex(v1, v2, v3, vertices);
+		addVertex(v1, v3, v2, vertices);
 	
 	}
+
+	//std::cout << "generated " << vertices.size() / 6 << " vertices for cell at " << localX << ", " << localY << ", " << localZ << std::endl;
 
 	return vertices;
 	

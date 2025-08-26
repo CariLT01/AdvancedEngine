@@ -110,9 +110,14 @@ void Engine::initialize() {
 	glEnable(GL_CULL_FACE);
 	glfwSetInputMode(window->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	initializeCamera();
-	initializeDebuggingObjects();
+	initializeWorld();
+	//initializeDebuggingObjects();
 	
 	registerEvents();
+}
+
+void Engine::initializeWorld() {
+	chunksManager = new ChunksManager(camera);
 }
 
 void Engine::initializeCamera() {
@@ -128,16 +133,16 @@ void Engine::registerEvents() {
 	window->onResize = std::bind(&Engine::onWindowResize, this);
 }
 
-void Engine::initializeDebuggingObjects() {
+/*void Engine::initializeDebuggingObjects() {
 
-	/*VertexAttribute positionVA = VertexAttribute{
+	VertexAttribute positionVA = VertexAttribute{
 		.sizeInBytes = sizeof(float) * 3,
 		.size = 3,
 		.type = GL_FLOAT,
 		.normalized = GL_FALSE
-	};*/
+	};
 
-	/*std::vector<float> vertices = {
+	std::vector<float> vertices = {
 		 0.5f,  0.5f, 0.0f,  // top right
 		 0.5f, -0.5f, 0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,  // bottom left
@@ -148,7 +153,7 @@ void Engine::initializeDebuggingObjects() {
 		0, 1, 3,
 		// first triangle
 	  1, 2, 3    // second triangle
-	};*/
+	};
 
 	//material = new TransformMaterial(fragmentShaderSource);
 	//Mesh* mesh = new Mesh(vertices, indices, material);
@@ -158,7 +163,7 @@ void Engine::initializeDebuggingObjects() {
 
 	// --- Generate a grid of random values ---
 
-	std::vector<float> densities(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+	std::vector<float> densities;
 	//densities.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 	std::vector<unsigned int> materials = {};
 
@@ -168,19 +173,25 @@ void Engine::initializeDebuggingObjects() {
 
 	srand(time(nullptr));
 
+	std::vector<float> heightMap(CHUNK_SIZE * CHUNK_SIZE);
 
-	fnSimplex->GenUniformGrid3D(densities.data(), 0, 0, 0, CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE, 0.06, rand());
 
-	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
-		for (unsigned int y = 0; y < CHUNK_SIZE; y++) {
+	fnSimplex->GenUniformGrid2D(heightMap.data(), 0, 0, CHUNK_SIZE, CHUNK_SIZE, 0.06, rand());
+
+	for (unsigned int y = 0; y < CHUNK_SIZE; y++) {
+		for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
 			for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 
 
 				//const float v = fnSimplex->GenSingle3D((float)x * scale, (float)y * scale, (float)z * scale, 68);
 				//const float v = rand() / (float)RAND_MAX * 2.0f - 1.0f;
 				//densities.push_back((v + 1) / 2.0f);
-				const float v = densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE];
-				densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = (v + 1) / 2.0f;
+				const float heightMapValue = (heightMap[x * CHUNK_SIZE + z] + 1) / 2.0f;
+				const float surfaceHeight = heightMapValue * 10.0f;
+
+				densities.push_back(std::clamp(surfaceHeight - y, 0.0f, 1.0f));
+
+				//densities[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = (v + 1) / 2.0f;
 				materials.push_back(1);
 
 			}
@@ -189,7 +200,7 @@ void Engine::initializeDebuggingObjects() {
 
 	MarchingCubeGenerator generator(0.5f);
 
-	const std::vector<float> vertices = generator.generateMesh(densities, materials, 4);
+	const std::vector<float> vertices = generator.generateMesh(densities, materials, 1);
 
 	std::vector<unsigned int> indices = {};
 
@@ -201,19 +212,27 @@ void Engine::initializeDebuggingObjects() {
 
 	Mesh* mesh = new Mesh(vertices, indices, material);
 	worldObject = new WorldObject(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), mesh, camera);
-}
+}*/
 
 void Engine::tick() {
 	handleCameraInput();
+
+	// Get the current position in chunk coordinates
+
+	const glm::vec3& currentCameraPosition = camera->position;
+	const glm::vec3 currentChunkPosition = glm::vec3(
+		std::floor(camera->position.x / CHUNK_SIZE),
+		std::floor(camera->position.y / CHUNK_SIZE),
+		std::floor(camera->position.z / CHUNK_SIZE)
+	);
+
+	chunksManager->tick(currentChunkPosition);
 }
 
 void Engine::render() {
-
-	
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	worldObject->render();
+	chunksManager->renderChunks();
 }
 
 void Engine::run() {

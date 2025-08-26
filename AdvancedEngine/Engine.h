@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldObject.h"
-
+#include "ChunksManager.h"
 
 
 class Engine {
@@ -24,6 +24,7 @@ private:
 	void initialize();
 	void initializeDebuggingObjects();
 	void initializeCamera();
+	void initializeWorld();
 
 	void handleCameraInput();
 	void registerEvents();
@@ -37,9 +38,8 @@ private:
 
 	// DEBUG
 
-	WorldObject* worldObject;
-	Material* material;
 	Camera* camera;
+	ChunksManager* chunksManager;
 
 	double lastX;
 	double lastY;

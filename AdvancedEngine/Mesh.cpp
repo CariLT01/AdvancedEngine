@@ -8,6 +8,12 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, Mater
 	ebo = new EBO(indices, GL_STATIC_DRAW);
 }
 
+Mesh::~Mesh() {
+	delete vbo;
+	delete vao;
+	delete ebo;
+}
+
 void Mesh::prepareUniforms() {
 	material->use();
 }

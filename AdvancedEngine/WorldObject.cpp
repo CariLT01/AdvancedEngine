@@ -11,7 +11,9 @@ WorldObject::WorldObject(const glm::vec3& position, const glm::vec3& rotation, c
 	this->camera = camera;
 	recomputeModelMatrix();
 }
-
+WorldObject::~WorldObject() {
+	// Mesh and Camera are not owned by WorldObject, so we don't delete them here
+}
 void WorldObject::recomputeModelMatrix() {
 	modelMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::translate(modelMatrix, position);

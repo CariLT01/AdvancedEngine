@@ -16,6 +16,7 @@ It is responsible for setting up the VAO, VBO, and EBO, and issuing the draw cal
 class Mesh {
 public:
 	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, Material* material);
+	~Mesh();
 
 	Material* material;
 

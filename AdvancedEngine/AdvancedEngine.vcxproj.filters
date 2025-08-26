@@ -34,6 +34,12 @@
     <Filter Include="Header Files\engine\world">
       <UniqueIdentifier>{3f2054dc-86e9-4737-b6b4-d67088412db1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\world">
+      <UniqueIdentifier>{50f1dda7-d367-4afe-a885-cfc466360b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\terrain">
+      <UniqueIdentifier>{f9063aad-6f59-4b84-b037-fe996b74b164}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -78,11 +84,20 @@
     <ClCompile Include="WorldObject.cpp">
       <Filter>Source Files\engine\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="MarchingCubesGenerator.cpp">
-      <Filter>Source Files\engine\mesh</Filter>
-    </ClCompile>
     <ClCompile Include="ChunksManager.h">
       <Filter>Header Files\engine\world</Filter>
+    </ClCompile>
+    <ClCompile Include="MarchingCubesGenerator.cpp">
+      <Filter>Source Files\engine\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainGenerator.cpp">
+      <Filter>Source Files\engine\world</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunksManager.cpp">
+      <Filter>Source Files\engine\world</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Source Files\engine\world</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +145,12 @@
     </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainGenerator.h">
+      <Filter>Header Files\engine\world</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Header Files\engine\world</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

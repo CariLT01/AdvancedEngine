@@ -24,7 +24,7 @@ VAO::VAO(std::vector<VertexAttribute> vertexAttributes, VBO* vbo) {
 
 	this->numberOfValuesPerVertex = 0;
 
-	std::cout << "--- Setting vertex attributes ---" << std::endl;
+	//std::cout << "--- Setting vertex attributes ---" << std::endl;
 
 	for (const auto& attribute : vertexAttributes) {
 		glVertexAttribPointer(
@@ -36,12 +36,12 @@ VAO::VAO(std::vector<VertexAttribute> vertexAttributes, VBO* vbo) {
 			reinterpret_cast<void*>(currentOffset) // offset in the buffer
 		);
 
-		std::cout << "Attribute: " << index
+		/*std::cout << "Attribute: " << index
 			<< ", Size: " << attribute.size
 			<< ", Type: " << attribute.type
 			<< ", Normalized: " << (attribute.normalized ? "true" : "false")
 			<< ", Offset: " << currentOffset
-			<< ", Stride: " << stride << std::endl;
+			<< ", Stride: " << stride << std::endl;*/
 
 		glEnableVertexAttribArray(index);
 
@@ -50,10 +50,14 @@ VAO::VAO(std::vector<VertexAttribute> vertexAttributes, VBO* vbo) {
 		this->numberOfValuesPerVertex += attribute.size;
 	}
 
-	std::cout << "--- Finished setting vertex attributes ---" << std::endl;
-	std::cout << "Number of values per vertex: " << this->numberOfValuesPerVertex << std::endl;
+	//std::cout << "--- Finished setting vertex attributes ---" << std::endl;
+	//std::cout << "Number of values per vertex: " << this->numberOfValuesPerVertex << std::endl;
 
-	unbind();
+	unbind();	
+}
+
+VAO::~VAO() {
+	glDeleteVertexArrays(1, &vao);
 }
 
 void VAO::bind() {
