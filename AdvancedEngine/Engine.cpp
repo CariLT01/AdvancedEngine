@@ -106,7 +106,7 @@ void Engine::onWindowResize() {
 void Engine::initialize() {
 	// Initialization code can go here if needed
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set a clear color
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set a clear color
 	glViewport(0, 0, currentWidth, currentHeight);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -145,6 +145,7 @@ void Engine::initializeDeferredRendering() {
 
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glViewport(0, 0, currentWidth, currentHeight);
 
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
@@ -178,6 +179,8 @@ void Engine::initializeDeferredRendering() {
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		throw std::runtime_error("Framebuffer incomplete");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 
@@ -314,6 +317,7 @@ void Engine::render() {
 	glEnable(GL_DEPTH_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	// GBUffer pass

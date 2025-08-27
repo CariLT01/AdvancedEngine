@@ -218,47 +218,10 @@ public:
 
 };
 
-class TerrainMaterial : public Material {
-public:
-	TerrainMaterial() : Material(terrainVertexShaderSource, terrainFragmentShaderSource, 
-		
-		{
-			{ sizeof(float) * 3, 3, GL_FLOAT, GL_FALSE }, // position
-			{ sizeof(float) * 3, 3, GL_FLOAT, GL_FALSE }  // normal
-		}
-	), normalMapTexture(nullptr), albedoTexture(nullptr), roughnessTexture(nullptr), metallicTexture(nullptr)
-	{
-	};
-
-	void use() override {
-		shaderProgram->use();
-
-		if (albedoTexture != nullptr) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, albedoTexture->textureID);
-		}
-
-		if (normalMapTexture != nullptr) {
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, normalMapTexture->textureID);
-		}
-
-		int albedoTextureLoc = getUniformLocation("uAlbedo");
-		int normalTextureLoc = getUniformLocation("uNormal");
-
-		glUniform1i(albedoTextureLoc, 0);
-		glUniform1i(normalTextureLoc, 1);
-	}
-
-	Texture* normalMapTexture;
-	Texture* albedoTexture;
-	Texture* roughnessTexture;
-	Texture* metallicTexture;
-};
 
 class TerrainGBufferMaterial : public Material {
 public:
-	TerrainGBufferMaterial() : Material(terrainVertexShaderSource, terrainFragmentShaderSource,
+	TerrainGBufferMaterial() : Material(gBufferTerrainVertexShaderSource, gBufferTerrainFragmentShaderSource,
 
 		{
 			{ sizeof(float) * 3, 3, GL_FLOAT, GL_FALSE }, // position
@@ -304,6 +267,7 @@ out vec2 vUv;
 
 void main() {
 	gl_Position = vec4(aPos.xy, 0.0, 1.0);
+	vUv = aTexCoords;
 }
 
 )";
@@ -313,16 +277,23 @@ constexpr const char* deferredShadingFragment = R"(
 
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+uniform sampler2D gPosition;
 
 in vec2 vUv;
 
 out vec4 FragColor;
 
+const vec3 lightDirection = normalize(vec3(-1.0, -1.0, -1.0));
+
 void main() {
+	vec3 normal = texture(gNormal, vUv).rgb;
 
-	vec3 normalColor = texture(gAlbedo, vUv).rgb;
+	float brightness = max(dot(normalize(normal), -lightDirection), 0.0);
+	float clampedBrightness = mix(0.4, 1.0, brightness);
 
-	FragColor = vec4(normalColor.r, 1.0, 0.0, 1.0);
+	vec3 albedoColor = texture(gAlbedo, vUv).rgb;
+
+	FragColor = vec4(albedoColor * clampedBrightness, 1.0);
 }
 
 

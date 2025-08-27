@@ -19,6 +19,7 @@ Player::Player(const glm::vec3& startingPosition, Camera* camera, PhysicsEngine*
 		JPH::EMotionType::Dynamic,
 		Layers::MOVING
 	);
+	bcs.mAllowSleeping = false;
 
 	playerBody = physicsEngine->bodyInterface->CreateBody(bcs);
 	physicsEngine->addObject(playerBody);
