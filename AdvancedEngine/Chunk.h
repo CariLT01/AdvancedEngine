@@ -4,6 +4,7 @@
 #include <vector>
 #include "WorldObject.h"
 #include "MarchingCubesGenerator.h"
+#include "PhysicsEngine.h"
 
 class Chunk {
 public:
@@ -16,8 +17,9 @@ public:
 
 	WorldObject* chunkObject;
 	Mesh* chunkMesh;
+	JPH::Body* chunkBody;
+	JPH::Ref<JPH::Shape> chunkShape;
 
-
-	void buildChunk(Material* material, MarchingCubeGenerator* generator, Camera* camera);
+	void buildChunk(Material* material, MarchingCubeGenerator* generator, Camera* camera, PhysicsEngine* physicsEngine);
 	void render();
 };

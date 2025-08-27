@@ -151,14 +151,14 @@ void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector
 std::vector<float> MarchingCubeGenerator::buildCell(const unsigned int& localX, const unsigned int& localY, const unsigned int& localZ, std::vector<float>& densities, std::vector<unsigned int>& materials, const unsigned int& detailLevel) {
 	std::vector<float> vertices;
 	
-	const Vector3 point0 = { localX, localY, localZ };
-	const Vector3 point1 = { localX + 1, localY, localZ };
-	const Vector3 point2 = { localX + 1, localY, localZ + 1 };
-	const Vector3 point3 = { localX, localY, localZ + 1 };
-	const Vector3 point4 = { localX, localY + 1, localZ };
-	const Vector3 point5 = { localX + 1, localY + 1, localZ };
-	const Vector3 point6 = { localX + 1, localY + 1, localZ + 1 };
-	const Vector3 point7 = { localX, localY + 1, localZ + 1 };
+	const Vector3 point0 = { static_cast<float>(localX), static_cast<float>(localY), static_cast<float>(localZ) };
+	const Vector3 point1 = { static_cast<float>(localX) + 1, static_cast<float>(localY), static_cast<float>(localZ) };
+	const Vector3 point2 = { static_cast<float>(localX) + 1, static_cast<float>(localY), static_cast<float>(localZ) + 1 };
+	const Vector3 point3 = { static_cast<float>(localX), static_cast<float>(localY), static_cast<float>(localZ) + 1 };
+	const Vector3 point4 = { static_cast<float>(localX), static_cast<float>(localY) + 1, static_cast<float>(localZ) };
+	const Vector3 point5 = { static_cast<float>(localX) + 1, static_cast<float>(localY) + 1, static_cast<float>(localZ) };
+	const Vector3 point6 = { static_cast<float>(localX) + 1, static_cast<float>(localY) + 1, static_cast<float>(localZ) + 1 };
+	const Vector3 point7 = { static_cast<float>(localX), static_cast<float>(localY) + 1, static_cast<float>(localZ) + 1 };
 
 	Vector3 vertList[12] = { {0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0}};
 
@@ -166,54 +166,54 @@ std::vector<float> MarchingCubeGenerator::buildCell(const unsigned int& localX, 
 
 	unsigned int cubeIndex = 0;
 
-	if (getDensityAtPoint(densities, point0.x * detailLevel, point0.y * detailLevel, point0.z * detailLevel) < ISOLEVEL) cubeIndex |= 1;
-	if (getDensityAtPoint(densities, point1.x * detailLevel, point1.y * detailLevel, point1.z * detailLevel) < ISOLEVEL) cubeIndex |= 2;
-	if (getDensityAtPoint(densities, point2.x * detailLevel, point2.y * detailLevel, point2.z * detailLevel) < ISOLEVEL) cubeIndex |= 4;
-	if (getDensityAtPoint(densities, point3.x * detailLevel, point3.y * detailLevel, point3.z * detailLevel) < ISOLEVEL) cubeIndex |= 8;
-	if (getDensityAtPoint(densities, point4.x * detailLevel, point4.y * detailLevel, point4.z * detailLevel) < ISOLEVEL) cubeIndex |= 16;
-	if (getDensityAtPoint(densities, point5.x * detailLevel, point5.y * detailLevel, point5.z * detailLevel) < ISOLEVEL) cubeIndex |= 32;
-	if (getDensityAtPoint(densities, point6.x * detailLevel, point6.y * detailLevel, point6.z * detailLevel) < ISOLEVEL) cubeIndex |= 64;
-	if (getDensityAtPoint(densities, point7.x * detailLevel, point7.y * detailLevel, point7.z * detailLevel) < ISOLEVEL) cubeIndex |= 128;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point0.x) * detailLevel, static_cast<unsigned int>(point0.y) * detailLevel, static_cast<unsigned int>(point0.z) * detailLevel) < ISOLEVEL) cubeIndex |= 1;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point1.x) * detailLevel, static_cast<unsigned int>(point1.y) * detailLevel, static_cast<unsigned int>(point1.z) * detailLevel) < ISOLEVEL) cubeIndex |= 2;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point2.x) * detailLevel, static_cast<unsigned int>(point2.y) * detailLevel, static_cast<unsigned int>(point2.z) * detailLevel) < ISOLEVEL) cubeIndex |= 4;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point3.x) * detailLevel, static_cast<unsigned int>(point3.y) * detailLevel, static_cast<unsigned int>(point3.z) * detailLevel) < ISOLEVEL) cubeIndex |= 8;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point4.x) * detailLevel, static_cast<unsigned int>(point4.y) * detailLevel, static_cast<unsigned int>(point4.z) * detailLevel) < ISOLEVEL) cubeIndex |= 16;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point5.x) * detailLevel, static_cast<unsigned int>(point5.y) * detailLevel, static_cast<unsigned int>(point5.z) * detailLevel) < ISOLEVEL) cubeIndex |= 32;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point6.x) * detailLevel, static_cast<unsigned int>(point6.y) * detailLevel, static_cast<unsigned int>(point6.z) * detailLevel) < ISOLEVEL) cubeIndex |= 64;
+	if (getDensityAtPoint(densities, static_cast<unsigned int>(point7.x) * detailLevel, static_cast<unsigned int>(point7.y) * detailLevel, static_cast<unsigned int>(point7.z) * detailLevel) < ISOLEVEL) cubeIndex |= 128;
 
 	if (edgeTable[cubeIndex] == 0) {
 		return {};
 	}
 
 	if (edgeTable[cubeIndex] & 1) {
-		vertList[0] = VertexInterp(ISOLEVEL, point0 * detailLevel, point1 * detailLevel, getDensityAtPoint(densities, point0.x * detailLevel, point0.y * detailLevel, point0.z * detailLevel), getDensityAtPoint(densities, point1.x * detailLevel, point1.y * detailLevel, point1.z * detailLevel));
+		vertList[0] = VertexInterp(ISOLEVEL, point0 * static_cast<float>(detailLevel), point1 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point0.x) * detailLevel, static_cast<unsigned int>(point0.y) * detailLevel, static_cast<unsigned int>(point0.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point1.x) * detailLevel, static_cast<unsigned int>(point1.y) * detailLevel, static_cast<unsigned int>(point1.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 2) {
-		vertList[1] = VertexInterp(ISOLEVEL, point1 * detailLevel, point2 * detailLevel, getDensityAtPoint(densities, point1.x * detailLevel, point1.y * detailLevel, point1.z * detailLevel), getDensityAtPoint(densities, point2.x * detailLevel, point2.y * detailLevel, point2.z * detailLevel));
+		vertList[1] = VertexInterp(ISOLEVEL, point1 * static_cast<float>(detailLevel), point2 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point1.x) * detailLevel, static_cast<unsigned int>(point1.y) * detailLevel, static_cast<unsigned int>(point1.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point2.x) * detailLevel, static_cast<unsigned int>(point2.y) * detailLevel, static_cast<unsigned int>(point2.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 4) {
-		vertList[2] = VertexInterp(ISOLEVEL, point2 * detailLevel, point3 * detailLevel, getDensityAtPoint(densities, point2.x * detailLevel, point2.y * detailLevel, point2.z * detailLevel), getDensityAtPoint(densities, point3.x * detailLevel, point3.y * detailLevel, point3.z * detailLevel));
+		vertList[2] = VertexInterp(ISOLEVEL, point2 * static_cast<float>(detailLevel), point3 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point2.x) * detailLevel, static_cast<unsigned int>(point2.y) * detailLevel, static_cast<unsigned int>(point2.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point3.x) * detailLevel, static_cast<unsigned int>(point3.y) * detailLevel, static_cast<unsigned int>(point3.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 8) {
-		vertList[3] = VertexInterp(ISOLEVEL, point3 * detailLevel, point0 * detailLevel, getDensityAtPoint(densities, point3.x * detailLevel, point3.y * detailLevel, point3.z * detailLevel), getDensityAtPoint(densities, point0.x * detailLevel, point0.y * detailLevel, point0.z * detailLevel));
+		vertList[3] = VertexInterp(ISOLEVEL, point3 * static_cast<float>(detailLevel), point0 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point3.x) * detailLevel, static_cast<unsigned int>(point3.y) * detailLevel, static_cast<unsigned int>(point3.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point0.x) * detailLevel, static_cast<unsigned int>(point0.y) * detailLevel, static_cast<unsigned int>(point0.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 16) {
-		vertList[4] = VertexInterp(ISOLEVEL, point4 * detailLevel, point5 * detailLevel, getDensityAtPoint(densities, point4.x * detailLevel, point4.y * detailLevel, point4.z * detailLevel), getDensityAtPoint(densities, point5.x * detailLevel, point5.y * detailLevel, point5.z * detailLevel));
+		vertList[4] = VertexInterp(ISOLEVEL, point4 * static_cast<float>(detailLevel), point5 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point4.x) * detailLevel, static_cast<unsigned int>(point4.y) * detailLevel, static_cast<unsigned int>(point4.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point5.x) * detailLevel, static_cast<unsigned int>(point5.y) * detailLevel, static_cast<unsigned int>(point5.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 32) {
-		vertList[5] = VertexInterp(ISOLEVEL, point5 * detailLevel, point6 * detailLevel, getDensityAtPoint(densities, point5.x * detailLevel, point5.y * detailLevel, point5.z * detailLevel), getDensityAtPoint(densities, point6.x * detailLevel, point6.y * detailLevel, point6.z * detailLevel));
+		vertList[5] = VertexInterp(ISOLEVEL, point5 * static_cast<float>(detailLevel), point6 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point5.x) * detailLevel, static_cast<unsigned int>(point5.y) * detailLevel, static_cast<unsigned int>(point5.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point6.x) * detailLevel, static_cast<unsigned int>(point6.y) * detailLevel, static_cast<unsigned int>(point6.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 64) {
-		vertList[6] = VertexInterp(ISOLEVEL, point6 * detailLevel, point7 * detailLevel, getDensityAtPoint(densities, point6.x * detailLevel, point6.y * detailLevel, point6.z * detailLevel), getDensityAtPoint(densities, point7.x * detailLevel, point7.y * detailLevel, point7.z * detailLevel));
+		vertList[6] = VertexInterp(ISOLEVEL, point6 * static_cast<float>(detailLevel), point7 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point6.x) * detailLevel, static_cast<unsigned int>(point6.y) * detailLevel, static_cast<unsigned int>(point6.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point7.x) * detailLevel, static_cast<unsigned int>(point7.y) * detailLevel, static_cast<unsigned int>(point7.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 128) {
-		vertList[7] = VertexInterp(ISOLEVEL, point7 * detailLevel, point4 * detailLevel, getDensityAtPoint(densities, point7.x * detailLevel, point7.y * detailLevel, point7.z * detailLevel), getDensityAtPoint(densities, point4.x * detailLevel, point4.y * detailLevel, point4.z * detailLevel));
+		vertList[7] = VertexInterp(ISOLEVEL, point7 * static_cast<float>(detailLevel), point4 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point7.x) * detailLevel, static_cast<unsigned int>(point7.y) * detailLevel, static_cast<unsigned int>(point7.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point4.x) * detailLevel, static_cast<unsigned int>(point4.y) * detailLevel, static_cast<unsigned int>(point4.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 256) {
-		vertList[8] = VertexInterp(ISOLEVEL, point0 * detailLevel, point4 * detailLevel, getDensityAtPoint(densities, point0.x * detailLevel, point0.y * detailLevel, point0.z * detailLevel), getDensityAtPoint(densities, point4.x * detailLevel, point4.y * detailLevel, point4.z * detailLevel));
+		vertList[8] = VertexInterp(ISOLEVEL, point0 * static_cast<float>(detailLevel), point4 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point0.x) * detailLevel, static_cast<unsigned int>(point0.y) * detailLevel, static_cast<unsigned int>(point0.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point4.x) * detailLevel, static_cast<unsigned int>(point4.y) * detailLevel, static_cast<unsigned int>(point4.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 512) {
-		vertList[9] = VertexInterp(ISOLEVEL, point1 * detailLevel, point5 * detailLevel, getDensityAtPoint(densities, point1.x * detailLevel, point1.y * detailLevel, point1.z * detailLevel), getDensityAtPoint(densities, point5.x * detailLevel, point5.y * detailLevel, point5.z * detailLevel));
+		vertList[9] = VertexInterp(ISOLEVEL, point1 * static_cast<float>(detailLevel), point5 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point1.x) * detailLevel, static_cast<unsigned int>(point1.y) * detailLevel, static_cast<unsigned int>(point1.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point5.x) * detailLevel, static_cast<unsigned int>(point5.y) * detailLevel, static_cast<unsigned int>(point5.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 1024) {
-		vertList[10] = VertexInterp(ISOLEVEL, point2 * detailLevel, point6 * detailLevel, getDensityAtPoint(densities, point2.x * detailLevel, point2.y * detailLevel, point2.z * detailLevel), getDensityAtPoint(densities, point6.x * detailLevel, point6.y * detailLevel, point6.z * detailLevel));
+		vertList[10] = VertexInterp(ISOLEVEL, point2 * static_cast<float>(detailLevel), point6 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point2.x) * detailLevel, static_cast<unsigned int>(point2.y) * detailLevel, static_cast<unsigned int>(point2.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point6.x) * detailLevel, static_cast<unsigned int>(point6.y) * detailLevel, static_cast<unsigned int>(point6.z) * detailLevel));
 	}
 	if (edgeTable[cubeIndex] & 2048) {
-		vertList[11] = VertexInterp(ISOLEVEL, point3 * detailLevel, point7 * detailLevel, getDensityAtPoint(densities, point3.x * detailLevel, point3.y * detailLevel, point3.z * detailLevel), getDensityAtPoint(densities, point7.x * detailLevel, point7.y * detailLevel, point7.z * detailLevel));
+		vertList[11] = VertexInterp(ISOLEVEL, point3 * static_cast<float>(detailLevel), point7 * static_cast<float>(detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point3.x) * detailLevel, static_cast<unsigned int>(point3.y) * detailLevel, static_cast<unsigned int>(point3.z) * detailLevel), getDensityAtPoint(densities, static_cast<unsigned int>(point7.x) * detailLevel, static_cast<unsigned int>(point7.y) * detailLevel, static_cast<unsigned int>(point7.z) * detailLevel));
 	}
 
 	for (unsigned int i = 0; triTable[cubeIndex][i] != -1; i += 3) {
@@ -225,7 +225,7 @@ std::vector<float> MarchingCubeGenerator::buildCell(const unsigned int& localX, 
 	
 	}
 
-	//std::cout << "generated " << vertices.size() / 6 << " vertices for cell at " << localX << ", " << localY << ", " << localZ << std::endl;
+	//std::cout << "generated " << vertices.size() / 6 << " vertices for cell at " << static_cast<float>(localX) << ", " << static_cast<float>(localY) << ", " << static_cast<float>(localZ) << std::endl;
 
 	return vertices;
 	

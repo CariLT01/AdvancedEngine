@@ -18,7 +18,7 @@ struct TerrainChunkData {
 
 class ChunksManager {
 public:
-	ChunksManager(Camera* camera);
+	ChunksManager(Camera* camera, PhysicsEngine* physicsEngine);
 	void tick(const glm::vec3& currentChunkPosition);
 	void renderChunks();
 private:
@@ -39,7 +39,7 @@ private:
 	TerrainMaterial* terrainMaterial;
 	MarchingCubeGenerator* meshGenerator;
 	Camera* camera;
-	
+	PhysicsEngine* physicsEngine;
 
 
 };

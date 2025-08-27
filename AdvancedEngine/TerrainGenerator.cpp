@@ -17,7 +17,7 @@ GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chu
 
 	std::vector<float> heightmap((CHUNK_SIZE + 1) * (CHUNK_SIZE + 1));
 
-	const float scale = 0.03f;
+	const float scale = 0.005f;
 	
 	fnSimplex->GenUniformGrid2D(heightmap.data(), chunkPosX * CHUNK_SIZE, chunkPosZ * CHUNK_SIZE, CHUNK_SIZE + 1, CHUNK_SIZE + 1, scale, 69420);
 
@@ -25,8 +25,11 @@ GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chu
 		for (unsigned int x = 0; x < CHUNK_SIZE + 1; x++) {
 			for (unsigned int z = 0; z < CHUNK_SIZE + 1; z++) {
 				const float heightMapValue = (heightmap[z * (CHUNK_SIZE + 1) + x] + 1) / 2.0f;
+
+				const float realHeight = powf(heightMapValue, 2);
+
 				//const float heightMapValue = fnSimplex->GenSingle2D((float)(x + chunkPosX * (CHUNK_SIZE + 1)) * scale, (float)(z + chunkPosZ * (CHUNK_SIZE + 1)) * scale, 69420);
-				const float surfaceHeight = heightMapValue * 10.0f;
+				const float surfaceHeight = realHeight * 50.0f;
 
 				const int worldX = x + chunkPosX * CHUNK_SIZE;
 				const int worldY = y + chunkPosY * CHUNK_SIZE;

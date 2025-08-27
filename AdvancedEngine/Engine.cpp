@@ -6,6 +6,8 @@
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
@@ -56,7 +58,7 @@ void Engine::handleCameraInput() {
 
 	const float SENSITIVITY = 0.1f;
 
-	if (window->getKeyPressed(GLFW_KEY_W) == GLFW_PRESS) {
+	/*if (window->getKeyPressed(GLFW_KEY_W) == GLFW_PRESS) {
 		camera->position += camera->direction * deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
 	}
@@ -71,7 +73,7 @@ void Engine::handleCameraInput() {
 	if (window->getKeyPressed(GLFW_KEY_D) == GLFW_PRESS) {
 		camera->position += camera->cameraRight * deltaTime * MOVEMENT_SPEED;
 		camera->recomputeMatrices();
-	}
+	}*/
 
 	double posX, posY;
 
@@ -109,15 +111,20 @@ void Engine::initialize() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glfwSetInputMode(window->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	physicsEngine = new PhysicsEngine();
+
 	initializeCamera();
 	initializeWorld();
 	//initializeDebuggingObjects();
 	
 	registerEvents();
+
+	
 }
 
 void Engine::initializeWorld() {
-	chunksManager = new ChunksManager(camera);
+	chunksManager = new ChunksManager(camera, physicsEngine);
 }
 
 void Engine::initializeCamera() {
@@ -126,6 +133,9 @@ void Engine::initializeCamera() {
 	camera->aspectRatio = static_cast<float>(window->windowWidth) / static_cast<float>(window->windowHeight);
 
 	camera->recomputeMatrices();
+
+	player = new Player(glm::vec3(0, 100, 0), camera, physicsEngine);
+
 
 }
 
@@ -215,6 +225,17 @@ void Engine::registerEvents() {
 }*/
 
 void Engine::tick() {
+
+	
+	//std::cout << "begin process inputs" << std::endl;
+	player->processInputs(this->window, deltaTime);
+	//std::cout << "end process inputs update physics" << std::endl;
+	physicsEngine->step(deltaTime);
+	//std::cout << "end update physics begin post update" << std::endl;
+	player->postUpdate();
+	//std::cout << "end post update" << std::endl;
+
+
 	handleCameraInput();
 
 	// Get the current position in chunk coordinates
@@ -240,6 +261,7 @@ void Engine::run() {
 	int fpsCounter = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 
+	std::cout << "begin mainloop" << std::endl;
 
 	while (!window->windowShouldClose()) {
 

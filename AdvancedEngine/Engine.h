@@ -5,7 +5,8 @@
 #include "Camera.h"
 #include "WorldObject.h"
 #include "ChunksManager.h"
-
+#include "PhysicsEngine.h"
+#include "Player.h"
 
 class Engine {
 public:
@@ -40,6 +41,8 @@ private:
 
 	Camera* camera;
 	ChunksManager* chunksManager;
+	PhysicsEngine* physicsEngine;
+	Player* player;
 
 	double lastX;
 	double lastY;

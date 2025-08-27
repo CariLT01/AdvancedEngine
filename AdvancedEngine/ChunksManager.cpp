@@ -10,7 +10,7 @@ inline std::size_t hashVec3(const glm::vec3& v) {
 		^ (std::hash<int>()(static_cast<int>(v.z)) << 2);
 }
 
-ChunksManager::ChunksManager(Camera* camera) : camera(camera) {
+ChunksManager::ChunksManager(Camera* camera, PhysicsEngine* physicsEngine) : camera(camera), physicsEngine(physicsEngine) {
 	createOffsetsCache();
 
 	terrainGenerator = new TerrainGenerator();
@@ -56,7 +56,11 @@ void ChunksManager::tick(const glm::vec3& currentChunkPosition) {
 	const TerrainChunkData& chunkData = knownChunks[hash];
 
 	Chunk* newChunk = new Chunk(chunkToLoad, chunkData.densities, chunkData.materials);
-	newChunk->buildChunk(terrainMaterial, meshGenerator, camera);
+	newChunk->buildChunk(terrainMaterial, meshGenerator, camera, physicsEngine);
+	if (newChunk->chunkBody != nullptr) {
+		physicsEngine->addObject(newChunk->chunkBody);
+	}
+
 
 	loadedChunks[hash] = newChunk;
 
