@@ -116,6 +116,8 @@ void Engine::initialize() {
 
 	initializeCamera();
 	initializeWorld();
+	initializeDeferredRendering();
+	initializeFullscreenQuad();
 	//initializeDebuggingObjects();
 	
 	registerEvents();
@@ -136,6 +138,64 @@ void Engine::initializeCamera() {
 
 	player = new Player(glm::vec3(0, 100, 0), camera, physicsEngine);
 
+
+}
+
+void Engine::initializeDeferredRendering() {
+
+	glGenFramebuffers(1, &gBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, currentWidth, currentHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+	glGenTextures(1, &gPosition);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+	glGenTextures(1, &gAlbedo);
+	glBindTexture(GL_TEXTURE_2D, gAlbedo);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gAlbedo, 0);
+
+
+	glGenTextures(1, &gNormal);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
+
+	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		throw std::runtime_error("Framebuffer incomplete");
+
+}
+
+void Engine::initializeFullscreenQuad() {
+
+	const std::vector<float> quadVerts = {
+		-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f,  1.0f, 1.0f
+	};
+	const std::vector<unsigned int> quadInd = {
+		0, 1, 2, // first triangle
+		0, 2, 3  // second triangle
+	};
+
+	DeferredShadingMaterial* deferredShadingMat = new DeferredShadingMaterial();
+	fullScreenQuad = new Mesh(quadVerts, quadInd, deferredShadingMat);
 
 }
 
@@ -251,9 +311,33 @@ void Engine::tick() {
 }
 
 void Engine::render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// GBUffer pass
 	chunksManager->renderChunks();
+
+	// Deferred shading pass
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gAlbedo);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+
+	glDisable(GL_DEPTH_TEST);
+
+	fullScreenQuad->prepareUniforms();
+	fullScreenQuad->render();
+
+
+
 }
 
 void Engine::run() {

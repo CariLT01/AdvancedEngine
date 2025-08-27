@@ -15,5 +15,6 @@ public:
 
 	GeneratedTerrainResult generateTerrain(const unsigned int& chunkPosX, const unsigned int& chunkPosY, const unsigned int& chunkPosZ);
 
+	FastNoise::SmartNode<FastNoise::FractalFBm> fnFractal;
 	FastNoise::SmartNode<FastNoise::Simplex> fnSimplex;
 };

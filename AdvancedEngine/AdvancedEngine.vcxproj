@@ -161,6 +161,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="TerrainGenerator.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TriangulationTables.h" />
     <ClInclude Include="VAO.h" />

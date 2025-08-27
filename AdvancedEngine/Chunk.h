@@ -19,6 +19,7 @@ public:
 	Mesh* chunkMesh;
 	JPH::Body* chunkBody;
 	JPH::Ref<JPH::Shape> chunkShape;
+	PhysicsEngine* physicsEngine;
 
 	void buildChunk(Material* material, MarchingCubeGenerator* generator, Camera* camera, PhysicsEngine* physicsEngine);
 	void render();

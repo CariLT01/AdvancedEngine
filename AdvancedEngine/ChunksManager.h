@@ -36,7 +36,7 @@ private:
 	std::vector<glm::vec3> loadChunksOffsets;
 	
 	TerrainGenerator* terrainGenerator;
-	TerrainMaterial* terrainMaterial;
+	TerrainGBufferMaterial* terrainMaterial;
 	MarchingCubeGenerator* meshGenerator;
 	Camera* camera;
 	PhysicsEngine* physicsEngine;

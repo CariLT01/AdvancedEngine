@@ -114,6 +114,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\engine\player</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\engine\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\engine\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

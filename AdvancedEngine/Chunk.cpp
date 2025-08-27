@@ -13,15 +13,22 @@ Chunk::~Chunk() {
 	if (chunkMesh == nullptr) return;
 	delete chunkObject;
 	delete chunkMesh;
+
+    if (physicsEngine->bodyInterface->IsAdded(chunkBody->GetID())) {
+        physicsEngine->bodyInterface->RemoveBody(chunkBody->GetID());
+    }
+    physicsEngine->bodyInterface->DestroyBody(chunkBody->GetID());
 }
 
 void Chunk::buildChunk(Material* material, MarchingCubeGenerator* generator, Camera* camera, PhysicsEngine* physicsEngine) {
+    this->physicsEngine = physicsEngine;
+    
     std::vector<float> vertices = generator->generateMesh(densities, materials, 1);
     if (vertices.size() == 0) return;
 
     // Create graphics mesh (unchanged)
-    std::vector<unsigned int> indices(vertices.size() / 6);
-    for (unsigned int i = 0; i < vertices.size() / 6; i++) {
+    std::vector<unsigned int> indices(vertices.size() / N_TERRAIN_VA);
+    for (unsigned int i = 0; i < vertices.size() / N_TERRAIN_VA; i++) {
         indices[i] = i;
     }
     chunkMesh = new Mesh(vertices, indices, material);
@@ -32,16 +39,16 @@ void Chunk::buildChunk(Material* material, MarchingCubeGenerator* generator, Cam
     JPH::IndexedTriangleList triangles;
 
     // Each triangle has 3 vertices, each vertex has 6 floats
-    unsigned int numTriangles = vertices.size() / (6 * 3);
+    unsigned int numTriangles = vertices.size() / (N_TERRAIN_VA * 3);
     verticesList.reserve(numTriangles * 3);
     triangles.reserve(numTriangles);
 
     for (unsigned int tri = 0; tri < numTriangles; tri++) {
-        unsigned int baseIndex = tri * 3 * 6; // Skip 6 floats per vertex, 3 vertices per triangle
+        unsigned int baseIndex = tri * 3 * N_TERRAIN_VA; // Skip 6 floats per vertex, 3 vertices per triangle
 
         // Add vertices for this triangle
         for (int i = 0; i < 3; i++) {
-            unsigned int offset = baseIndex + i * 6;
+            unsigned int offset = baseIndex + i * N_TERRAIN_VA;
             verticesList.push_back(JPH::Float3(
                 vertices[offset],     // x
                 vertices[offset + 1], // y
@@ -78,6 +85,8 @@ void Chunk::buildChunk(Material* material, MarchingCubeGenerator* generator, Cam
 
 void Chunk::render() {
 	if (chunkObject != nullptr && chunkMesh != nullptr) {
+
+
 		chunkObject->render();
 	}
 	

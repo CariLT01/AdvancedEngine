@@ -9,8 +9,10 @@ public:
 
 	ShaderProgram* shaderProgram;
 
-	void use();
+	virtual void use();
 	int getUniformLocation(const char* name);
+
+
 
 	std::vector<VertexAttribute> vertexAttributes;
 };

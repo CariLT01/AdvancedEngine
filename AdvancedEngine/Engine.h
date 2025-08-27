@@ -24,8 +24,10 @@ private:
 
 	void initialize();
 	void initializeDebuggingObjects();
-	void initializeCamera();
+	void initializeCamera(); 
 	void initializeWorld();
+	void initializeDeferredRendering();
+	void initializeFullscreenQuad();
 
 	void handleCameraInput();
 	void registerEvents();
@@ -43,6 +45,16 @@ private:
 	ChunksManager* chunksManager;
 	PhysicsEngine* physicsEngine;
 	Player* player;
+	Mesh* fullScreenQuad;
+
+	GLuint gBuffer;
+
+	GLuint gPosition;
+	GLuint gNormal;
+	GLuint gAlbedo;
+	GLuint rboDepth;
+
+
 
 	double lastX;
 	double lastY;

@@ -5,7 +5,9 @@
 TerrainGenerator::TerrainGenerator() {
 
 	fnSimplex = FastNoise::New<FastNoise::Simplex>();
-
+	fnFractal = FastNoise::New<FastNoise::FractalFBm>();
+	fnFractal->SetSource(fnSimplex);
+	fnFractal->SetOctaveCount(6);
 }
 
 GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chunkPosX, const unsigned int& chunkPosY, const unsigned int& chunkPosZ) {
@@ -18,8 +20,9 @@ GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chu
 	std::vector<float> heightmap((CHUNK_SIZE + 1) * (CHUNK_SIZE + 1));
 
 	const float scale = 0.005f;
-	
-	fnSimplex->GenUniformGrid2D(heightmap.data(), chunkPosX * CHUNK_SIZE, chunkPosZ * CHUNK_SIZE, CHUNK_SIZE + 1, CHUNK_SIZE + 1, scale, 69420);
+	const float transition = 1.0f;
+
+	fnFractal->GenUniformGrid2D(heightmap.data(), chunkPosX * CHUNK_SIZE, chunkPosZ * CHUNK_SIZE, CHUNK_SIZE + 1, CHUNK_SIZE + 1, scale, 69420);
 
 	for (unsigned int y = 0; y < CHUNK_SIZE + 1; y++) {
 		for (unsigned int x = 0; x < CHUNK_SIZE + 1; x++) {
@@ -37,7 +40,9 @@ GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chu
 
 				const unsigned index = z + x * (CHUNK_SIZE + 1) + y * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1);
 
-				const float density = std::clamp(surfaceHeight - worldY, 0.0f, 1.0f);
+				float density = (surfaceHeight - worldY) / transition;
+				// Now density crosses 0 at surfaceHeight
+				density = std::clamp(density * 0.5f + 0.5f, 0.0f, 1.0f);
 
 				if (index > (CHUNK_SIZE + 1)* (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1)) {
 					std::cerr << "Index out of bounds: " << index << std::endl;

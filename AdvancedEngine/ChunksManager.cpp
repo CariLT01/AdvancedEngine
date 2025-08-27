@@ -14,7 +14,16 @@ ChunksManager::ChunksManager(Camera* camera, PhysicsEngine* physicsEngine) : cam
 	createOffsetsCache();
 
 	terrainGenerator = new TerrainGenerator();
-	terrainMaterial = new TerrainMaterial();
+	terrainMaterial = new TerrainGBufferMaterial();
+
+	// Initialize textures
+
+	Texture* albedoTerrainTexture = new Texture("assets/terrain.png");
+	Texture* normalTerrainTexture = new Texture("assets/terrain-normal.png");
+
+	terrainMaterial->albedoTexture = albedoTerrainTexture;
+	terrainMaterial->normalMapTexture = normalTerrainTexture;
+
 	meshGenerator = new MarchingCubeGenerator(0.5f);
 }
 
