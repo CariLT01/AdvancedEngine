@@ -50,7 +50,7 @@ GeneratedTerrainResult TerrainGenerator::generateTerrain(const unsigned int& chu
 
 
 				densities[index] = density;
-				materials[index] = 0;
+				materials[index] = 2;
 			}
 		}
 	}

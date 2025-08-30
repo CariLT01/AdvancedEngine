@@ -154,10 +154,24 @@ void Engine::initializeDeferredRendering() {
 
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+	glGenTextures(1, &gNormal);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+	glGenTextures(1, &gSkyMaterial);
+	glBindTexture(GL_TEXTURE_2D, gSkyMaterial);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8, currentWidth, currentHeight, 0, GL_RG, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gSkyMaterial, 0);
 
 	/*glGenTextures(1, &gAlbedo);
 	glBindTexture(GL_TEXTURE_2D, gAlbedo);
@@ -183,8 +197,8 @@ void Engine::initializeDeferredRendering() {
 
 
 
-	GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, attachments);
+	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, attachments);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		throw std::runtime_error("Framebuffer incomplete");
@@ -207,6 +221,18 @@ void Engine::initializeFullscreenQuad() {
 	};
 
 	DeferredShadingMaterial* deferredShadingMat = new DeferredShadingMaterial();
+	Texture* albedoTerrainTexture = new Texture({ "assets/terrain.png", "assets/terrain2.png", "assets/grass-albedo.png" });
+	Texture* normalTerrainTexture = new Texture({ "assets/terrain-normal.png", "assets/terrain2-normal.png", "assets/grass-normal.png" });
+	Texture* roughnessTerrainTexture = new Texture({ "assets/terrain-roughness.png", "assets/terrain2-roughness.png", "assets/grass-roughness.png" });
+	Texture* metallicTerrainTexture = new Texture({ "assets/terrain-metallic.png", "assets/terrain2-metallic.png", "assets/grass-metallic.png" });
+	Texture* aoTerrainTexture = new Texture({ "assets/terrain-ao.png", "assets/terrain-ao.png", "assets/terrain-ao.png" });
+
+	deferredShadingMat->albedoTexture = albedoTerrainTexture;
+	deferredShadingMat->normalMapTexture = normalTerrainTexture;
+	deferredShadingMat->metallicTexture = metallicTerrainTexture;
+	deferredShadingMat->roughnessTexture = roughnessTerrainTexture;
+	deferredShadingMat->aoTexture = aoTerrainTexture;
+
 	fullScreenQuad = new Mesh(quadVerts, quadInd, deferredShadingMat);
 
 }
@@ -333,19 +359,25 @@ void Engine::render() {
 	chunksManager->renderChunks();
 
 	// Deferred shading pass
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-
-	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, gRoughnessMetallicAO);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, gSkyMaterial);
+
+
+
+	//glActiveTexture(GL_TEXTURE3);
+	//glBindTexture(GL_TEXTURE_2D, gRoughnessMetallicAO);
 
 	glDisable(GL_DEPTH_TEST);
 

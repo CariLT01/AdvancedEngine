@@ -18,17 +18,7 @@ ChunksManager::ChunksManager(Camera* camera, PhysicsEngine* physicsEngine) : cam
 
 	// Initialize textures
 
-	Texture* albedoTerrainTexture = new Texture({ "assets/terrain.png", "assets/terrain2.png", "assets/grass-albedo.png"});
-	Texture* normalTerrainTexture = new Texture({ "assets/terrain-normal.png", "assets/terrain2-normal.png", "assets/grass-normal.png"});
-	Texture* roughnessTerrainTexture = new Texture({ "assets/terrain-roughness.png", "assets/terrain2-roughness.png", "assets/grass-roughness.png"});
-	Texture* metallicTerrainTexture = new Texture({ "assets/terrain-metallic.png", "assets/terrain2-metallic.png", "assets/grass-metallic.png"});
-	Texture* aoTerrainTexture = new Texture({ "assets/terrain-ao.png", "assets/terrain-ao.png", "assets/terrain-ao.png" });
 
-	terrainMaterial->albedoTexture = albedoTerrainTexture;
-	terrainMaterial->normalMapTexture = normalTerrainTexture;
-	terrainMaterial->metallicTexture = metallicTerrainTexture;
-	terrainMaterial->roughnessTexture = roughnessTerrainTexture;
-	terrainMaterial->aoTexture = aoTerrainTexture;
 
 	meshGenerator = new MarchingCubeGenerator(0.5f);
 }

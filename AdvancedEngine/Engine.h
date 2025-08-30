@@ -50,10 +50,9 @@ private:
 	GLuint gBuffer;
 
 	GLuint gPosition;
-	GLuint gNormal;
-	GLuint gAlbedo;
-	GLuint gRoughnessMetallicAO;
 	GLuint rboDepth;
+	GLuint gNormal;
+	GLuint gSkyMaterial;
 
 
 
