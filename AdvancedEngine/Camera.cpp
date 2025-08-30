@@ -47,5 +47,79 @@ void Camera::recomputeMatrices() {
 
     // Compute projection matrix
     projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, NEAR, FAR);
+
+    extractPlanes();
 }
 
+
+void Camera::extractPlanes() {
+
+    glm::mat4 VP = projectionMatrix * viewMatrix;
+
+    planes[0].normal.x = VP[0][3] + VP[0][0];
+    planes[0].normal.y = VP[1][3] + VP[1][0];
+    planes[0].normal.z = VP[2][3] + VP[2][0];
+    planes[0].distance = VP[3][3] + VP[3][0];
+
+    // Right
+    planes[1].normal.x = VP[0][3] - VP[0][0];
+    planes[1].normal.y = VP[1][3] - VP[1][0];
+    planes[1].normal.z = VP[2][3] - VP[2][0];
+    planes[1].distance = VP[3][3] - VP[3][0];
+
+    // Bottom
+    planes[2].normal.x = VP[0][3] + VP[0][1];
+    planes[2].normal.y = VP[1][3] + VP[1][1];
+    planes[2].normal.z = VP[2][3] + VP[2][1];
+    planes[2].distance = VP[3][3] + VP[3][1];
+
+    // Top
+    planes[3].normal.x = VP[0][3] - VP[0][1];
+    planes[3].normal.y = VP[1][3] - VP[1][1];
+    planes[3].normal.z = VP[2][3] - VP[2][1];
+    planes[3].distance = VP[3][3] - VP[3][1];
+
+    // Near
+    planes[4].normal.x = VP[0][3] + VP[0][2];
+    planes[4].normal.y = VP[1][3] + VP[1][2];
+    planes[4].normal.z = VP[2][3] + VP[2][2];
+    planes[4].distance = VP[3][3] + VP[3][2];
+
+    // Far
+    planes[5].normal.x = VP[0][3] - VP[0][2];
+    planes[5].normal.y = VP[1][3] - VP[1][2];
+    planes[5].normal.z = VP[2][3] - VP[2][2];
+    planes[5].distance = VP[3][3] - VP[3][2];
+
+    // Normalize planes
+    for (int i = 0; i < 6; i++) {
+        float length = glm::length(planes[i].normal);
+        planes[i].normal /= length;
+        planes[i].distance /= length;
+    }
+}
+
+bool Camera::isAABBoutsidePlane(const Plane& plane, const glm::vec3& min, const glm::vec3& max) {
+    // Positive vertex
+    glm::vec3 p = min;
+    if (plane.normal.x >= 0) p.x = max.x;
+    if (plane.normal.y >= 0) p.y = max.y;
+    if (plane.normal.z >= 0) p.z = max.z;
+
+    // If positive vertex is behind plane, box is outside
+    return glm::dot(plane.normal, p) + plane.distance < 0;
+}
+
+bool Camera::isAABBinsideFrustum(const glm::vec3& min, const glm::vec3& max) {
+    for (int i = 0; i < 6; i++) {
+        if (isAABBoutsidePlane(planes[i], min, max)) return false;
+    }
+    return true;
+}
+
+bool Camera::IsAABBboxInsideFrustum(const glm::vec3 & position, const glm::vec3 & size) {
+    glm::vec3 halfSize = size * 0.5f;
+    glm::vec3 min = position - halfSize;
+    glm::vec3 max = position + halfSize;
+    return isAABBinsideFrustum(min, max);
+}

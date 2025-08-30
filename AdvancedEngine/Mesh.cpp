@@ -1,4 +1,7 @@
 #include "Mesh.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, Material* material) {
 	this->material = material;
@@ -15,7 +18,9 @@ Mesh::~Mesh() {
 }
 
 void Mesh::prepareUniforms() {
+
 	material->use();
+
 }
 
 

@@ -5,7 +5,7 @@
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
-
+#include "Camera.h"
 /*
 A Mesh represents a 3D object in the scene. It contains geometry data (vertices and indices)
 It does not transform the object in the world; that is handled by a WorldObject.

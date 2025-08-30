@@ -21,4 +21,5 @@ public:
 	void recomputeModelMatrix();
 
 	void render();
+	void prepareMaterial();
 };

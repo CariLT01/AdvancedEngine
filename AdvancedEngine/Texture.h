@@ -1,10 +1,11 @@
 #pragma once
 
 #include <glad/gl.h>
+#include <vector>
 
 class Texture {
 public:
-	Texture(const char* path);
+	Texture(std::vector<const char*> paths);
 
 	void load();
 

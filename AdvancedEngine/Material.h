@@ -2,6 +2,7 @@
 
 #include "VAO.h"
 #include "ShaderProgram.h"
+#include "Camera.h"
 
 class Material {
 public:
@@ -10,7 +11,9 @@ public:
 	ShaderProgram* shaderProgram;
 
 	virtual void use();
+	virtual void use2(Camera* camera);
 	int getUniformLocation(const char* name);
+	void setMatrices(Camera* camera);
 
 
 

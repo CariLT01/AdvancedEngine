@@ -83,6 +83,7 @@ void Chunk::buildChunk(Material* material, MarchingCubeGenerator* generator, Cam
 }
 
 
+
 void Chunk::render() {
 	if (chunkObject != nullptr && chunkMesh != nullptr) {
 

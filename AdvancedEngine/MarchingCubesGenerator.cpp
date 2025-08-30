@@ -83,6 +83,7 @@ float MarchingCubeGenerator::getDensityAtPoint(std::vector<float>& densities, co
 #endif
 }
 
+
 Vector3 VertexInterp(float isolevel, const Vector3& p1, const Vector3& p2, float valp1, float valp2) {
 	float mu;
 	Vector3 p;
@@ -117,7 +118,7 @@ struct VertexMapItem {
 	unsigned int index;
 };
 
-void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector<float>& vertices) {
+void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector<float>& vertices, float material) {
 	glm::vec3 A = glm::vec3(a.x, a.y, a.z);
 	glm::vec3 B = glm::vec3(b.x, b.y, b.z);
 	glm::vec3 C = glm::vec3(c.x, c.y, c.z);
@@ -130,6 +131,7 @@ void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector
 	vertices.push_back(normal.x);
 	vertices.push_back(normal.y);
 	vertices.push_back(normal.z);
+	vertices.push_back(material);
 
 	vertices.push_back(b.x);
 	vertices.push_back(b.y);
@@ -137,6 +139,7 @@ void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector
 	vertices.push_back(normal.x);
 	vertices.push_back(normal.y);
 	vertices.push_back(normal.z);
+	vertices.push_back(material);
 
 	vertices.push_back(c.x);
 	vertices.push_back(c.y);
@@ -144,6 +147,9 @@ void addVertex(const Vector3& a, const Vector3& b, const Vector3& c, std::vector
 	vertices.push_back(normal.x);
 	vertices.push_back(normal.y);
 	vertices.push_back(normal.z);
+	vertices.push_back(material);
+
+
 }
 
 
@@ -221,7 +227,11 @@ std::vector<float> MarchingCubeGenerator::buildCell(const unsigned int& localX, 
 		Vector3 v2 = vertList[triTable[cubeIndex][i + 1]];
 		Vector3 v3 = vertList[triTable[cubeIndex][i + 2]];
 		
-		addVertex(v1, v3, v2, vertices);
+		const unsigned int index = point0.z + point0.x * (CHUNK_SIZE + 1) + point0.y * (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1);
+
+
+
+		addVertex(v1, v3, v2, vertices, static_cast<float>(materials[index]));
 	
 	}
 

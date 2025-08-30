@@ -3,6 +3,10 @@
 #include <glm/glm.hpp>
 
 
+struct Plane {
+	glm::vec3 normal;
+	float distance;
+};
 
 class Camera {
 public:
@@ -27,5 +31,14 @@ public:
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
+	Plane planes[6];
+
 	void recomputeMatrices();
+
+	void update();
+	void extractPlanes();
+	bool isAABBoutsidePlane(const Plane& plane, const glm::vec3& min, const glm::vec3& max);
+	bool isAABBinsideFrustum(const glm::vec3& min, const glm::vec3& max);
+	bool IsAABBboxInsideFrustum(const glm::vec3& position, const glm::vec3& size);
+
 };

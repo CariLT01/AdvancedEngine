@@ -23,15 +23,15 @@ void WorldObject::recomputeModelMatrix() {
 	modelMatrix = glm::scale(modelMatrix, scale);
 }
 
+
+
 void WorldObject::render() {
-	mesh->prepareUniforms();
+
+	//mesh->prepareUniforms(camera);
 
 	int modelMatrixLoc = mesh->material->getUniformLocation("uModelMatrix");
-	int viewMatrixLoc = mesh->material->getUniformLocation("uViewMatrix");
-	int projectionMatrixLoc = mesh->material->getUniformLocation("uProjectionMatrix");
+
 	glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix));
-	glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix));	
 
 	mesh->render();
 }

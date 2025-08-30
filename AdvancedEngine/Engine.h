@@ -52,6 +52,7 @@ private:
 	GLuint gPosition;
 	GLuint gNormal;
 	GLuint gAlbedo;
+	GLuint gRoughnessMetallicAO;
 	GLuint rboDepth;
 
 
