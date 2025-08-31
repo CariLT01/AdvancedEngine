@@ -4,10 +4,11 @@
 #include <iostream>
 
 const float MOVEMENT_SPEED = 5.0f;
+const float radius = 0.5f;
+const float height = 1.8f;
 
 Player::Player(const glm::vec3& startingPosition, Camera* camera, PhysicsEngine* physicsEngine) : camera(camera), physicsEngine(physicsEngine) {
-	const float radius = 0.5f;
-	const float height = 1.8f;
+
 
 
 	JPH::RefConst<JPH::Shape> capsuleShape = new JPH::CapsuleShape(height / 2, radius);
@@ -66,6 +67,9 @@ void Player::processInputs(Window* window, const float deltaTime) {
 	if (window->getKeyPressed(GLFW_KEY_D) == GLFW_PRESS) {
 		movementVelocity += right * MOVEMENT_SPEED * deltaTime;
 	}
+	if (window->getKeyPressed(GLFW_KEY_SPACE) == GLFW_PRESS) {
+		movementVelocity += glm::vec3(0.0, 1.0, 0.0) * MOVEMENT_SPEED * deltaTime * 5.0f;
+	}
 
 	newVelocity += JPH::Vec3(
 		movementVelocity.x,
@@ -85,6 +89,6 @@ void Player::processInputs(Window* window, const float deltaTime) {
 void Player::postUpdate() {
 	const JPH::Vec3& bodyPosition = physicsEngine->getBodyLocation(*playerBody);
 
-	camera->position = glm::vec3(bodyPosition.GetX(), bodyPosition.GetY(), bodyPosition.GetZ());
+	camera->position = glm::vec3(bodyPosition.GetX(), bodyPosition.GetY() + height * 0.8, bodyPosition.GetZ());
 	camera->recomputeMatrices();
 }

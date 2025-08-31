@@ -17,4 +17,5 @@ public:
 
 	FastNoise::SmartNode<FastNoise::FractalFBm> fnFractal;
 	FastNoise::SmartNode<FastNoise::Simplex> fnSimplex;
+	FastNoise::SmartNode<FastNoise::FractalFBm> fnCaveFractal;
 };

@@ -156,7 +156,7 @@ flat in uint vMaterial;
 void main() {
 	
 	gPosition = vPos;
-	gNormal = vNormal;
+	gNormal = (vNormal * 0.5) + vec3(0.5);
     gSkyMaterial = vec2(1.0, float(vMaterial) / 255.0);
 
 }
@@ -428,6 +428,7 @@ vec3 PBRLighting(vec3 N, vec3 V, vec3 L,
 
 const vec3 lightDirection = normalize(vec3(-1.0, -1.0, -1.0));
 const vec3 lightColor = vec3(4.0);
+const float CULLING_DISTANCE_SQUARED = 150.0 * 150.0;
 
 void main() {
 
@@ -436,40 +437,52 @@ void main() {
     float material = float(skyMaterial.y * 255.0);
 
     vec3 fragPosition = texture(gPosition, vUv).rgb;
-    vec3 vNormal = normalize(texture(gNormal, vUv).rgb);
-    vec3 normal = sampleNormalTriplanar(fragPosition, vNormal, material);    
 
+    float distanceSquared = dot(fragPosition - uCameraPosition, fragPosition - uCameraPosition);
+
+    vec3 vNormal = ((texture(gNormal, vUv).rgb) * 2) - vec3(1.0);
     vec3 albedo = pow(getTextureColor(uAlbedo, fragPosition, vNormal, material), vec3(2.2));
-    float roughness = getTextureColorR(uRoughness, fragPosition, vNormal, material);
-    float metallic = getTextureColorR(uMetallic, fragPosition, vNormal, material);
-    float ao = getTextureColorR(uAo, fragPosition, vNormal, material);
 
-    ///// Physically based rendering /////
+    if (distanceSquared < CULLING_DISTANCE_SQUARED) {
+            
+            vec3 normal = sampleNormalTriplanar(fragPosition, vNormal, material);    
+
+            
+            float roughness = getTextureColorR(uRoughness, fragPosition, vNormal, material);
+            float metallic = getTextureColorR(uMetallic, fragPosition, vNormal, material);
+            float ao = getTextureColorR(uAo, fragPosition, vNormal, material);
+
+            ///// Physically based rendering /////
     
 
-    vec3 V = normalize(uCameraPosition - fragPosition);
-    vec3 L = normalize(-lightDirection);
+            vec3 V = normalize(uCameraPosition - fragPosition);
+            vec3 L = normalize(-lightDirection);
     
-    vec3 Lo =  PBRLighting(normal, V, L, albedo, metallic, roughness, lightColor);
+            vec3 Lo =  PBRLighting(normal, V, L, albedo, metallic, roughness, lightColor);
 
 	
-    vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 finalColor = ambient + Lo;
+            vec3 ambient = vec3(0.03) * albedo * ao;
+            vec3 finalColor = ambient + Lo;
 
 
 
 
-	//FragColor = vec4(albedoColor * clampedBrightness, 1.0);
-    //FragColor = vec4(roughness, roughness, roughness, 1.0);
-    //FragColor = vec4(vec3(metallic), 1.0);
+	        //FragColor = vec4(albedoColor * clampedBrightness, 1.0);
+            //FragColor = vec4(roughness, roughness, roughness, 1.0);
+            //FragColor = vec4(vec3(metallic), 1.0);
 
-    //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    FragColor = vec4(pow(finalColor, vec3(1.0 / 2.2)), 1.0);
+            //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            FragColor = vec4(pow(finalColor, vec3(1.0 / 2.2)), 1.0);
 
 
-    //FragColor = vec4(normal, 1.0);
-    //FragColor = vec4(fragPosition, 1.0);
-    //FragColor = vec4(gRMA, 1.0);
+            //FragColor = vec4(normal, 1.0);
+            //FragColor = vec4(fragPosition, 1.0);
+            //FragColor = vec4(gRMA, 1.0);
+    } else {
+        FragColor = vec4(pow(albedo, vec3(1.0 / 2.2)), 1.0);
+    }
+
+
 }
 
 

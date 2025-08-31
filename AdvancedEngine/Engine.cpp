@@ -161,7 +161,7 @@ void Engine::initializeDeferredRendering() {
 
 	glGenTextures(1, &gNormal);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, currentWidth, currentHeight, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
@@ -221,11 +221,11 @@ void Engine::initializeFullscreenQuad() {
 	};
 
 	DeferredShadingMaterial* deferredShadingMat = new DeferredShadingMaterial();
-	Texture* albedoTerrainTexture = new Texture({ "assets/terrain.png", "assets/terrain2.png", "assets/grass-albedo.png" });
-	Texture* normalTerrainTexture = new Texture({ "assets/terrain-normal.png", "assets/terrain2-normal.png", "assets/grass-normal.png" });
-	Texture* roughnessTerrainTexture = new Texture({ "assets/terrain-roughness.png", "assets/terrain2-roughness.png", "assets/grass-roughness.png" });
-	Texture* metallicTerrainTexture = new Texture({ "assets/terrain-metallic.png", "assets/terrain2-metallic.png", "assets/grass-metallic.png" });
-	Texture* aoTerrainTexture = new Texture({ "assets/terrain-ao.png", "assets/terrain-ao.png", "assets/terrain-ao.png" });
+	Texture* albedoTerrainTexture = new Texture({ "assets/stone-albedo.png", "assets/terrain2.png", "assets/grass-albedo.png" });
+	Texture* normalTerrainTexture = new Texture({ "assets/stone-normal.png", "assets/terrain2-normal.png", "assets/grass-normal.png" });
+	Texture* roughnessTerrainTexture = new Texture({ "assets/stone-roughness.png", "assets/terrain2-roughness.png", "assets/grass-roughness.png" });
+	Texture* metallicTerrainTexture = new Texture({ "assets/stone-metallic.png", "assets/terrain2-metallic.png", "assets/grass-metallic.png" });
+	Texture* aoTerrainTexture = new Texture({ "assets/stone-ao.png", "assets/terrain2-ao.png", "assets/grass-ao.png" });
 
 	deferredShadingMat->albedoTexture = albedoTerrainTexture;
 	deferredShadingMat->normalMapTexture = normalTerrainTexture;
